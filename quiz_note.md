@@ -68,5 +68,23 @@
 钻石例子里，carat（克拉）与 price（价格）关系非常强，强到会掩盖其他因素（如 cut）的影响。
 解决思路：先用模型把 price~carat 的主要关系解释掉，再看剩下的差异。
 
+## EDA
+### 他反驳“EDA = 更新版描述统计”的看法，并给出他心目中的 EDA 三要素：
+- attitude（态度）
+- flexibility（灵活性）
+- graph paper（图纸/透明片——今天就是 ggplot）重点不是“学会某个图”，而是“愿意看、能看见意料之外”。
+- **idea →（question + design）→ collection → analysis → answer**
+
+## CDA
+- **问题 → 设计 → 收集 → 分析 → 答案**
+- 
+
+
+
+
+
+
+
+
 
 
