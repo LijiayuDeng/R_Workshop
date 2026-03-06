@@ -1,7 +1,7 @@
 ---
 title: "EDA Workshop"
 author: "Lijiayu Deng, u8178636"
-date: "Today's date"
+date: "06/03/2026"
 output:
     html_document:
         toc: true
@@ -131,10 +131,125 @@ Cohen's d fills that gap.
 
 > A Cohen's d of 0.48 is a **medium effect** — the difference is real and meaningful, but the two groups still overlap a lot. You cannot tell whether a gorilla is male or female based on steps alone.
 
+```{r}
+ggplot(data, aes(x = sex, y = steps, fill = sex)) +
+  geom_boxplot(alpha = 0.7, outlier.colour = "red", outlier.alpha = 0.5) +
+  labs(
+    title = "Daily Step Counts in Gorillas by Sex",
+    subtitle = "Male gorillas walk significantly more steps per day than females",
+    x = "Sex",
+    y = "Daily Steps",
+    fill = "Sex",
+    caption = "Red dots indicate outliers"
+  ) +
+  scale_fill_manual(values = c("female" = "#F4A582", "male" = "#92C5DE")) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(size = 11, colour = "grey40"),
+    legend.position = "none"
+  )
+```
 
-
-
+### What we see in the boxplot:
+- Male gorillas have a higher median.
+- Both groups have similar spread (consistent with nearly equal SDs of ~2,390)
+- The two boxes overlap, supporting the medium effect size (Cohen's d = 0.48)
+- A few red outliers are visible in both groups
+- The difference is clear but not dramatic — you cannot separate the two groups by steps alone - but the difference is statistically significant and meaningful.
 
 # **Task 3**: Exploratory Data Analysis
 
+### 3.1 Quick overview with skimr
+
+```{r}
+library(skimr)
+skim(data)
+```
+
 ### Task 3 Questions
+
+```{r}
+ggplot(data, aes(x = steps)) +
+  geom_histogram(binwidth = 500, fill = "#92C5DE", alpha = 0.7) +
+  labs(
+    title = "Distribution of Daily Steps",
+    x = "Steps",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+```
+
+What we see in the histogram:
+- The distribution of steps is approximately symmetric (skewness = -0.05), close to normal. The 95% CI for mean daily steps is [7,491, 7,719], which is a narrow interval due to the large sample size (n = 1,786).
+
+```{r}
+ggplot(data, aes(x = BMI)) +
+  geom_histogram(binwidth = 1, fill = "#F4A582", alpha = 0.7) +
+  labs(
+    title = "Distribution of BMI",
+    x = "BMI",
+    y = "Frequency"
+  ) +
+  theme_minimal()
+```
+
+What we see in the histogram:
+- The distribution of BMI is more symmetric and approximately normal, with most gorillas having a BMI
+
+
+```{r}
+ggplot(data, aes(x = BMI, y = steps, color = sex)) +
+  geom_point(alpha = 0.5) +
+  scale_color_manual(values = c("female" = "#F4A582", "male" = "#92C5DE")) +
+  labs(
+    title = "Relationship between BMI and Daily Steps",
+    x = "BMI",
+    y = "Steps",
+    color = "Sex"
+  ) +
+  theme_minimal()
+```
+
+
+```{r}
+# Check skewness and confidence interval of steps distribution
+library(e1071)
+
+skewness(data$steps)
+
+# 95% CI of mean steps
+t.test(data$steps)$conf.int
+```
+
+```{r}
+# Test correlation between BMI and steps by sex
+cor.test(female_steps, data |> filter(sex == "female") |> pull(BMI))
+cor.test(male_steps, data |> filter(sex == "male") |> pull(BMI))
+```
+
+### Summary of EDA Findings
+
+**Overview (skimr):**
+- 1,786 observations, 4 variables, no missing values
+- Steps range from 0 to 15,000; BMI ranges from 15 to 38.6
+
+**Distribution of steps:**
+- Approximately symmetric (skewness = -0.05), close to normal
+- Most gorillas take between 5,000 and 10,000 steps per day
+- A few individuals have 0 steps, possibly due to device not being worn
+- 95% CI for mean steps: [7,491, 7,719]
+
+**Distribution of BMI:**
+- Approximately normal, centered around 28-29
+- No extreme outliers
+
+**BMI vs Steps:**
+- Pearson's correlation shows no significant relationship between BMI and 
+steps in either females (r = 0.024, p = 0.467) or males (r = 0.038, p = 0.267)
+- BMI is not a meaningful predictor of daily step count in gorillas
+
+**Sex differences:**
+- Male gorillas walk more steps on average than females (8,205 vs 7,055)
+- This difference is statistically significant (t(1784) = -10.16, p < 0.001)
+- Effect size is medium (Cohen's d = 0.48), meaning the two groups overlap considerably
