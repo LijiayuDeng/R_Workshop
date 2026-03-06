@@ -129,7 +129,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 ✖ dplyr::lag()    masks stats::lag()
 ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"/home/lichi/ANU_26s1/BIOL3207/Workshop_2/raw_data/data.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"raw_data/data.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Rows: 1786 Columns: 4
 ── Column specification ────────────────────────────────────────────────────────
@@ -158,6 +158,8 @@ dbl (3): id, steps, BMI
 # ℹ 1,776 more rows</code></pre>
 </div>
 </div>
+<section id="task-1-questions" class="level3">
+<h3 class="anchored" data-anchor-id="task-1-questions">Task 1 Questions</h3>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(data)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -196,14 +198,123 @@ dbl (3): id, steps, BMI
 <pre><code>[1] "male"   "female"</code></pre>
 </div>
 </div>
-<section id="task-1-questions" class="level3">
-<h3 class="anchored" data-anchor-id="task-1-questions">Task 1 Questions</h3>
+<p>When I check the data, the minimum steps is 0, which means there are some missing values in the data, probably because some gorillas were not tracked for a whole day. The BMI is all positive, which makes sense because BMI cannot be negative. The sex variable has two unique values, M and F, which makes sense.</p>
 </section>
 </section>
 <section id="task-2-null-hypothesis-significance-testing" class="level1">
 <h1><strong>Task 2</strong>: Null Hypothesis Significance Testing</h1>
 <section id="task-2-questions" class="level3">
 <h3 class="anchored" data-anchor-id="task-2-questions">Task 2 Questions</h3>
+<ul>
+<li><p>We assume that the null hypothesis is that there is no difference in the average number of steps taken between male and female gorillas.</p></li>
+<li><p>We can use a two-sample t-test to compare the means of the two groups</p></li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate from the data </span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>data <span class="sc">|&gt;</span> </span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(sex) <span class="sc">|&gt;</span> </span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">n</span>(),</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_steps =</span> <span class="fu">mean</span>(steps, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">sd_steps =</span> <span class="fu">sd</span>(steps, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 4
+  sex        n mean_steps sd_steps
+  &lt;chr&gt;  &lt;int&gt;      &lt;dbl&gt;    &lt;dbl&gt;
+1 female   931      7055.    2384.
+2 male     855      8205.    2397.</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>t_test_result <span class="ot">&lt;-</span> <span class="fu">t.test</span>(</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  steps <span class="sc">~</span> sex, </span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> data, </span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">var.equal =</span> <span class="cn">TRUE</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>t_test_result</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Two Sample t-test
+
+data:  steps by sex
+t = -10.16, df = 1784, p-value &lt; 2.2e-16
+alternative hypothesis: true difference in means between group female and group male is not equal to 0
+95 percent confidence interval:
+ -1372.3463  -928.2404
+sample estimates:
+mean in group female   mean in group male 
+            7054.695             8204.988 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate effect size (Cohen's d)</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>male_steps <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> <span class="fu">filter</span>(sex <span class="sc">==</span> <span class="st">"male"</span>) <span class="sc">|&gt;</span> <span class="fu">pull</span>(steps)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>female_steps <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> <span class="fu">filter</span>(sex <span class="sc">==</span> <span class="st">"female"</span>) <span class="sc">|&gt;</span> <span class="fu">pull</span>(steps)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>n1 <span class="ot">&lt;-</span> <span class="fu">length</span>(male_steps)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>n2 <span class="ot">&lt;-</span> <span class="fu">length</span>(female_steps)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>mean1 <span class="ot">&lt;-</span> <span class="fu">mean</span>(male_steps, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>mean2 <span class="ot">&lt;-</span> <span class="fu">mean</span>(female_steps, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>sd1 <span class="ot">&lt;-</span> <span class="fu">sd</span>(male_steps, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>sd2 <span class="ot">&lt;-</span> <span class="fu">sd</span>(female_steps, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>pooled_sd <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(((n1<span class="dv">-1</span>)<span class="sc">*</span>sd1<span class="sc">^</span><span class="dv">2</span> <span class="sc">+</span> (n2<span class="dv">-1</span>)<span class="sc">*</span>sd2<span class="sc">^</span><span class="dv">2</span>) <span class="sc">/</span> (n1 <span class="sc">+</span> n2 <span class="sc">-</span> <span class="dv">2</span>))</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>cohens_d <span class="ot">&lt;-</span> (mean1 <span class="sc">-</span> mean2) <span class="sc">/</span> pooled_sd</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>cohens_d</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.4812577</code></pre>
+</div>
+</div>
+</section>
+<section id="key-results" class="level3">
+<h3 class="anchored" data-anchor-id="key-results">Key Results</h3>
+<ul>
+<li><strong>Test used</strong>: We use the two-sample t-test to compare the means</li>
+<li><strong>Effect size</strong>: 0.48 which is a medium effect size, indicating a meaningful difference between the two groups</li>
+<li><strong>95% Confidence Interval of the difference</strong>: [-1372.3, -928.2] steps</li>
+<li><strong>p-value</strong>: &lt; 2.2e-16, which is much smaller than 0.05</li>
+</ul>
+</section>
+<section id="conclusions" class="level3">
+<h3 class="anchored" data-anchor-id="conclusions">Conclusions</h3>
+<p><strong>Scientific paper:</strong> A two-sample t-test revealed a statistically significant difference in daily step counts between male and female gorillas (t(1784) = -10.16, p &lt; 0.001, Cohen’s d = 0.48, 95% CI [-1372.3, -928.2]), with males walking on average 1150 more steps per day than females.</p>
+<p><strong>Zoo sign:</strong> Male gorillas walk about 1,150 more steps per day than females — a meaningful difference supported by strong statistical evidence!</p>
+<blockquote class="blockquote">
+<p>Cohen’s d measures how large the difference is between two groups, in terms of standard deviations. The formula is: d = (mean of group 1 - mean of group 2) / pooled standard deviation A t-test only tells you <strong>whether</strong> a difference exists (via the p-value), but not <strong>how big</strong> it is. Cohen’s d fills that gap.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>In our data: - Male mean: 8,205 steps - Female mean: 7,055 steps - Difference: 1,150 steps - Pooled SD: ~2,390 steps - Cohen’s d = 1150 / 2390 = <strong>0.48</strong></p>
+</blockquote>
+<blockquote class="blockquote">
+<p>This means the two groups differ by about <strong>half a standard deviation</strong>.</p>
+</blockquote>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>d</th>
+<th>Effect size</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0.2</td>
+<td>Small</td>
+</tr>
+<tr class="even">
+<td>0.5</td>
+<td>Medium</td>
+</tr>
+<tr class="odd">
+<td>0.8</td>
+<td>Large</td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote">
+<p>A Cohen’s d of 0.48 is a <strong>medium effect</strong> — the difference is real and meaningful, but the two groups still overlap a lot. You cannot tell whether a gorilla is male or female based on steps alone.</p>
+</blockquote>
 </section>
 </section>
 <section id="task-3-exploratory-data-analysis" class="level1">

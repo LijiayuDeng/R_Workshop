@@ -48,6 +48,8 @@ When I check the data, the minimum steps is 0, which means there are some missin
 
 # **Task 2**: Null Hypothesis Significance Testing
 
+### Task 2 Questions
+
 - We assume that the null hypothesis is that there is no difference in the average number of steps taken between male  and female gorillas.
 
 - We can use a two-sample t-test to compare the means of the two groups
@@ -95,7 +97,7 @@ cohens_d
 - **Test used**: We use the two-sample t-test to compare the means
 - **Effect size**: 0.48 which is a medium effect size, indicating a meaningful difference between the two groups
 - **95% Confidence Interval of the difference**: [-1372.3, -928.2] steps
-- **p-value**: < 2.2e-16
+- **p-value**: < 2.2e-16, which is much smaller than 0.05
 
 ### Conclusions
 
@@ -107,9 +109,31 @@ Male gorillas walk about 1,150 more steps per day than females — a meaningful 
 
 
 
+> Cohen's d measures how large the difference is between two groups, in terms of standard deviations.
+> The formula is: d = (mean of group 1 - mean of group 2) / pooled standard deviation
+> A t-test only tells you **whether** a difference exists (via the p-value), but not **how big** it is. 
+Cohen's d fills that gap.
+
+> In our data:
+- Male mean: 8,205 steps
+- Female mean: 7,055 steps
+- Difference: 1,150 steps
+- Pooled SD: ~2,390 steps
+- Cohen's d = 1150 / 2390 = **0.48**
+
+> This means the two groups differ by about **half a standard deviation**.
+
+| d | Effect size |
+|---|-------------|
+| 0.2 | Small |
+| 0.5 | Medium |
+| 0.8 | Large |
+
+> A Cohen's d of 0.48 is a **medium effect** — the difference is real and meaningful, but the two groups still overlap a lot. You cannot tell whether a gorilla is male or female based on steps alone.
 
 
-### Task 2 Questions
+
+
 
 # **Task 3**: Exploratory Data Analysis
 
